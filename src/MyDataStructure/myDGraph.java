@@ -40,10 +40,7 @@ public class myDGraph implements graph, Serializable
 			{
 				JSONObject CurrNode = (JSONObject)nodes.get(i);
 				String pos = CurrNode.getString("pos");
-				//System.out.println(pos);
 				int id = CurrNode.getInt("id");
-				//System.out.println(id);
-				//int dest = CurrNode.getInt("dest");
 				String[] arr = pos.split(",");
 				double x = Double.parseDouble(arr[0]);
 				double y = Double.parseDouble(arr[1]);
