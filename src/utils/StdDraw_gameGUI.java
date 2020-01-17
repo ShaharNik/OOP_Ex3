@@ -1689,7 +1689,7 @@ public final class StdDraw_gameGUI implements ActionListener, MouseListener, Mou
 	{
 		g = theG;
 	}
-
+/*
 	Thread t;
 	public void ThreadFormat(String scenario)
 	{
@@ -1718,6 +1718,7 @@ public final class StdDraw_gameGUI implements ActionListener, MouseListener, Mou
 		});
 		t2.start();
 	}
+	*/
 
 	/**
 	 * This method cannot be called directly.
@@ -1732,16 +1733,19 @@ public final class StdDraw_gameGUI implements ActionListener, MouseListener, Mou
 		{
 			JFrame jinput = new JFrame();
 			String scenario = JOptionPane.showInputDialog(jinput,"Which game to run? 0-23");
-			ThreadFormat(scenario);
-			//g.Play_manual(scenario);
+			//ThreadFormat(scenario);
+			g.setgui(true);
+			g.setAlgo(false);
+			g.Play(scenario);
 			break;
 		}
 		case "Play Automaticly":
 		{
 			JFrame jinput = new JFrame();
-			String fromS = JOptionPane.showInputDialog(jinput,"Which game to run? 0-23");
-			//ThreadFormat2(fromS);
-			g.Play_Automaticly(fromS);
+			String scenario = JOptionPane.showInputDialog(jinput,"Which game to run? 0-23");
+			g.setgui(true);
+			g.setAlgo(true);
+			g.Play(scenario);
 			break;
 		}
 		default:
