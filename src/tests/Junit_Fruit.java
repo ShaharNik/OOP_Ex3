@@ -6,8 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import MyDataStructure.*;
 
+import utils.Point3D;
+
+
 /**
- * Fruit tests.
+ * Fruit test class.
  * @authors Shahar and Or 
 
 **/
@@ -49,7 +52,24 @@ public class Junit_Fruit
 		assertEquals(fruit.getEdge(), null);
 		}
 		
+	
+	
 		
+		
+		  @Test
+		    void set_Pos_test() 
+		  {
+			  	
+		        myDGraph Dgraph = new myDGraph();
+		        MyFruit fruit = new MyFruit(Dgraph);
+		        MyFruit f2 =new MyFruit();
+		        Point3D p = new Point3D(2.0,4.0,6.0);
+		        f2.setPos(p);
+		      
+		        assertNotEquals(fruit.getPos(),f2.getPos());
+		      
+
+		    }
 	
 		
 		
