@@ -139,7 +139,7 @@ public class KML_Logger
     	    			"<Placemark>\n\r" +
     							"<styleUrl>#"+"Robot"+"</styleUrl>\n"+
     	    					"<Point>\n\r" +
-    								"<coordinates>" + y_location + "," + x_location + "," + z_location + "</coordinates>\n" +
+    								"<coordinates>" + x_location + "," + y_location + "," + z_location + "</coordinates>\n" +
     							"</Point>\n" +
     							"<TimeSpan>\r"+
     								"<begin>"+ startTime +"</begin>\n"+
@@ -155,7 +155,7 @@ public class KML_Logger
     	    			"<Placemark>\n\r" +
     							"<styleUrl>#"+"Banana"+"</styleUrl>\n"+
     	    					"<Point>\n\r" +
-    								"<coordinates>" + y_location + "," + x_location + "," + z_location + "</coordinates>\n" +
+    								"<coordinates>" + x_location + "," + y_location + "," + z_location + "</coordinates>\n" +
     							"</Point>\n" +
     							"<TimeSpan>\n\r"+
     								"<begin>"+ startTime +"</begin>\n"+
@@ -170,7 +170,7 @@ public class KML_Logger
     	    			"<Placemark>\n\r" +
     							"<styleUrl>#"+"Apple"+"</styleUrl>\n"+
     	    					"<Point>\n\r" +
-    								"<coordinates>" + y_location + "," + x_location + "," + z_location + "</coordinates>\n" +
+    								"<coordinates>" + x_location + "," + y_location + "," + z_location + "</coordinates>\n" +
     							"</Point>\n" +
     							"<TimeSpan>\n\r"+
     								"<begin>"+ startTime +"</begin>\n"+
