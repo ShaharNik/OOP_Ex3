@@ -40,7 +40,7 @@ public class KML_Logger
 	game_service game;
 	StringBuilder kmlBuilder;
 	DateTimeFormatter FORMATTER;
-	private int i;
+	private static int i;
 	LocalDateTime localDateTime;
 	FileWriter fw;
 	BufferedWriter bw;
@@ -57,7 +57,7 @@ public class KML_Logger
 		localDateTime = null;
 		try 
 		{
-			this.fw = new FileWriter("data\\"+ i++ +"myGameKmlScenario.kml");
+			this.fw = new FileWriter("data\\"+ ++i +"myGameKmlScenario.kml");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -143,7 +143,7 @@ public class KML_Logger
     							"</Point>\n" +
     							"<TimeSpan>\r"+
     								"<begin>"+ startTime +"</begin>\n"+
-    								"<end>"+ endTime +"</end>\n"+
+    								"<end>"+ startTime +"</end>\n"+
     							"</TimeSpan>\n"+
     							"</Placemark\n>"
     	        		);
@@ -159,7 +159,7 @@ public class KML_Logger
     							"</Point>\n" +
     							"<TimeSpan>\n\r"+
     								"<begin>"+ startTime +"</begin>\n"+
-    								"<end>"+ endTime +"</end>\n"+
+    								"<end>"+ startTime +"</end>\n"+
     							"</TimeSpan>\n"+
     							"</Placemark\n>"
     	        		);
@@ -174,7 +174,7 @@ public class KML_Logger
     							"</Point>\n" +
     							"<TimeSpan>\n\r"+
     								"<begin>"+ startTime +"</begin>\n"+
-    								"<end>"+ endTime +"</end>\n"+
+    								"<end>"+ startTime +"</end>\n"+
     							"</TimeSpan>\n"+
     							"</Placemark\n>"
     	        		);

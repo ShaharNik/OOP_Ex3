@@ -37,15 +37,15 @@ public class SimpleGameClient
 	public static void test1() 
 	{
 		game_service game = Game_Server.getServer(2); // you have [0,23] games
-		String g = game.getGraph();
+		String graphjson = game.getGraph();
 		myDGraph gg = new myDGraph();
-		gg.initFromJson(g); 
+		gg.initFromJson(graphjson); 
 		
 	
-		String info = game.toString();
-		System.out.println(info);
-		System.out.println(g);
-	/*
+		String gameinfo = game.toString();
+		//System.out.println(gameinfo);
+		//System.out.println(graphjson);
+	
 		// the list of fruits should be considered in your solution
 		Iterator<String> f_iter = game.getFruits().iterator();
 		while(f_iter.hasNext()) {System.out.println(f_iter.next());}
@@ -59,6 +59,7 @@ public class SimpleGameClient
 			long t = game.timeToEnd();
 			//System.out.println("roung: "+i+"  seconds to end:"+(t/1000));
 			List<String> log = game.move();
+			System.out.println(log);
 			if(log != null) 
 			{
 				String robot_json = log.get(0);
@@ -72,11 +73,12 @@ public class SimpleGameClient
 					int src = ttt.getInt("src");
 					int dest = ttt.getInt("dest");
 
-					if(dest==-1) {	
+					if(dest==-1) // move robo
+					{	
 						dest = nextNode(gg, src);
 						game.chooseNextEdge(rid, dest);
-						System.out.println("Turn to node: "+dest);
-						System.out.println(ttt);
+						//System.out.println("Turn to node: "+dest);
+						//System.out.println(ttt);
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -87,7 +89,7 @@ public class SimpleGameClient
 			}
 			i++;
 		}
-	*/
+	
 	}
 	/**
 	 * a very simple random walk implementation!

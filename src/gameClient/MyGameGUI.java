@@ -100,8 +100,10 @@ public class MyGameGUI
 
 	private void paint() {
 		StdDraw_gameGUI.clear();
-		if (_graph != null) {
-			StdDraw_gameGUI.text(maxx, maxy, "TimeLeft:"+game.timeToEnd()/1000);
+		if (_graph != null) 
+		{
+			if (game != null)
+				StdDraw_gameGUI.text(maxx, maxy, "TimeLeft:"+game.timeToEnd()/1000);
 			Collection<node_data> points = _graph.getV();
 			for (node_data v : points) {
 				StdDraw_gameGUI.setPenColor(Color.BLUE);
