@@ -25,10 +25,10 @@ public class Junit_Test_Robot
 		
 		Robot r =new Robot();
 		Robot r2 =new Robot();
-		if(r.toString().equals(r2.toString())) {
-			fail("defalut Constractor problem");
+		assertEquals(r.toString(),r2.toString());
+		
 		}
-	}
+	
 		@Test
 		void test_id()
 		{
