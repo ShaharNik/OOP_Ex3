@@ -31,7 +31,7 @@ import utils.StdDraw_gameGUI;
 /**
  * This class represent a GUI game which Robots need to eat as many fruits they can,
  * The game have manual place by the mouse,
- * and automatic gameplay using dijkstra based algorithm 
+ * and automatic gameplay based on dijkstra algorithm 
  * @author Shahar and Or
  *
  */
@@ -42,6 +42,7 @@ public class MyGameGUI
 	ArrayList<MyFruit> _fruits;
 	ArrayList<Robot> _bots;
 	game_service game;
+	KML_Logger myKML;
 
 	double minx = Integer.MAX_VALUE;
 	double maxx = Integer.MIN_VALUE;
@@ -54,6 +55,7 @@ public class MyGameGUI
 		this._graph = g;
 		this._fruits = new ArrayList<MyFruit>();
 		this._bots = new ArrayList<Robot>();
+		this.myKML = new KML_Logger();
 		initGUI();
 	}
 
@@ -62,6 +64,7 @@ public class MyGameGUI
 		_graph = new myDGraph();
 		this._fruits = new ArrayList<MyFruit>();
 		this._bots = new ArrayList<Robot>();
+		this.myKML = new KML_Logger();
 		initGUI();
 	}
 
@@ -171,6 +174,10 @@ public class MyGameGUI
 			int number = Integer.parseInt(scenario);
 			if (number >= 0 && number <= 23) 
 			{
+				game = Game_Server.getServer(number);
+				myKML.setGame(game);
+				myKML.createKMLforScenario();
+				
 				// init graph by scenario
 				initGraph(number);
 
@@ -224,11 +231,13 @@ public class MyGameGUI
 
 			while (game.isRunning()) 
 			{
-				long timeLeftToTheGame = game.timeToEnd();
+				//long timeLeftToTheGame = game.timeToEnd();
 				// System.out.println("Time left = "+timeLeftToTheGame);
 				initOrUpdateFruits();
 				gameMove();
-
+				myKML.initFruits();
+				myKML.initRobots();
+				//kml logger set fruits placemark
 				for (Robot r : _bots) 
 				{
 					if (r.getDest() == -1) 
@@ -261,6 +270,7 @@ public class MyGameGUI
 					e.printStackTrace();
 				}
 			}
+			myKML.FinishAndClose();
 			System.out.println("Finish game");
 			System.out.println("Score: " + calculateScore());
 		}
@@ -277,17 +287,26 @@ public class MyGameGUI
 			}
 			return false;
 		}
-
+		/**
+		 * Each robot contains a path to target fruit, if he reached it, the function smartly will calculate next path to a new fruit.
+		 * we will check for every fruit the edge its on, and will check if there is a robot on that edge.
+		 * If not - we will check the current direction that we can collect the fruit, there 2 options - the correct node or we will do 2 steps to collect it.
+		 * If a path isn't founded, we will do a random step to avoid "stucks".
+		 * @param r - gets robot
+		 * @return The robots next node destination
+		 */
 		private node_data chooseNextEdgeForRobot(Robot r) 
 		{
 			System.out.println(r);
-			if (r.getPath() == null || r.getPath().size() - 1 == r.getPathIndex()) {
+			if (r.getPath() == null || r.getPath().size() - 1 == r.getPathIndex()) 
+			{
 				boolean found = false;
 				r.setPath(null);
 				r.setPathIndex(-1);
 				r.setCurrEdge(null);
 
-				for (MyFruit f : _fruits) {
+				for (MyFruit f : _fruits) 
+				{
 					edge_data e = f.getEdge();
 
 					if (robotHasEdge(e))
@@ -409,7 +428,6 @@ public class MyGameGUI
 	}
 	
 	private void initGraph(int scene_number) {
-		game = Game_Server.getServer(scene_number);
 		String g = game.getGraph();
 		myDGraph gg = new myDGraph();
 		gg.initFromJson(g);
@@ -457,12 +475,8 @@ public class MyGameGUI
 
 	private void initRobots() {
 		// init robots
-		String gameString = game.toString();
-		JSONObject obj;
-		try {
-			obj = new JSONObject(gameString);
-			JSONObject CurrGame = (JSONObject) obj.get("GameServer");
-
+		try 
+		{
 			_bots = new ArrayList<Robot>();
 			List<String> Robots = game.getRobots();
 			for (int i = 0; i < Robots.size(); i++) {
@@ -471,7 +485,7 @@ public class MyGameGUI
 				b.botFromJSON(Robots.get(i));
 				_bots.add(b);
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

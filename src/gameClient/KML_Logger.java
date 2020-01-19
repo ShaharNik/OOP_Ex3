@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,8 +40,10 @@ public class KML_Logger
 	game_service game;
 	StringBuilder kmlBuilder;
 	DateTimeFormatter FORMATTER;
-	private static int i;
+	private int i;
 	LocalDateTime localDateTime;
+	FileWriter fw;
+	BufferedWriter bw;
 	
 	public KML_Logger() // needs to be singeltone
 	{
@@ -52,15 +55,23 @@ public class KML_Logger
 		FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 		i=0;
 		localDateTime = null;
+		try 
+		{
+			this.fw = new FileWriter("data\\"+ i++ +"myGameKmlScenario.kml");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.bw = new BufferedWriter(fw);
 	}
 	public static void main(String[] args) 
 	{
 		KML_Logger myKml = new KML_Logger();
-		myKml.createKMLforScenario(23);
+		//myKml.createKMLforScenario();
 
 	}
 	
-	private void initFruits()
+	void initFruits()
 	{
 		Iterator<String> f_iter = game.getFruits().iterator();
 		while (f_iter.hasNext()) 
@@ -69,9 +80,13 @@ public class KML_Logger
 			MyFruit f = new MyFruit();
 			f.initFromJson(json);
 			this._fruits.add(f);
+			if (f.getType() == 1)
+				this.addPlacemark("Apple", f.getPos().y(), f.getPos().x(), f.getPos().z());
+			else // banana
+				this.addPlacemark("Banana", f.getPos().y(), f.getPos().x(), f.getPos().z());
 		}
 	}
-	private void initRobots()
+	void initRobots()
 	{
 		// init robots
 		List<String> Robots = game.getRobots(); // Why Game don't give ROBOTS?
@@ -80,6 +95,7 @@ public class KML_Logger
 			Robot b = new Robot();
 			b.botFromJSON(Robots.get(i));
 			this._bots.add(b);
+			this.addPlacemark("Robot", b.getPos().y(), b.getPos().x(), b.getPos().z());
 		}
 	}
 	/**
@@ -87,12 +103,8 @@ public class KML_Logger
 	 * @param g Game that we want to write his details in the kml.
 	 * @return boolean if we succeed to create the kml or not.
 	 */
-	public boolean createKMLforScenario(int scenario)
+	public void createKMLforScenario()
 	{
-		game = Game_Server.getServer(scenario);
-		initFruits();
-		initRobots();
-
 		 // -----========== KML Start String and Styles =======------------
 		kmlBuilder.append( "<<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 				"<kml xmlns=\"http://www.opengis.net/kml/2.2\">"
@@ -100,21 +112,83 @@ public class KML_Logger
 				+ "<Style id=\"red\">\r\n" + 
 				"<IconStyle><Icon><href>http://maps.google.com/mapfiles/ms/icons/red-dot.png</href></Icon></IconStyle>\r\n" + 
 				"</Style><Style id=\"Robot\"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/pal3/icon49.png</href></Icon></IconStyle>\r\n" + 
-				"</Style><Style id=\"Fruit\"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/pal5/icon35.png</href></Icon></IconStyle></Style>");
+				"</Style><Style id=\"Banana\"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/pal3/icon40.png</href></Icon></IconStyle>\r\n" +
+				"</Style><Style id=\"Apple\"><IconStyle><Icon><href>http://maps.google.com/mapfiles/kml/pal5/icon35.png</href></Icon></IconStyle></Style>");
 
 		//  -------======== Add Fruits and Robots Placemarks ==========------------
+		initRobots();
+		initFruits();
+	}
+
+    private void addPlacemark(String style_id, double y_location, double x_location, double z_location)
+    {	
+		String startTime  = java.time.LocalDate.now()+"T"+java.time.LocalTime.now();
+		LocalTime spanEndsTime = LocalTime.now();
+		//spanEndsTime = spanEndsTime.plusSeconds(2);
+		spanEndsTime= spanEndsTime.plusNanos(100*1000000);
+		String endTime = java.time.LocalDate.now()+"T"+spanEndsTime;
+    	switch (style_id)
+    	{
+    		case "Robot":
+    		{
+    	        //Local date time instance
+    	        localDateTime = LocalDateTime.now();
+    	        //Get formatted String
+    	        String whenPlacemarkString = FORMATTER.format(localDateTime); // "yyyy/MM/dd HH:mm:ss"
+    	        kmlBuilder.append(
+    	    			"<Placemark>\n\r" +
+    							"<styleUrl>#"+"Robot"+"</styleUrl>\n"+
+    	    					"<Point>\n\r" +
+    								"<coordinates>" + y_location + "," + x_location + "," + z_location + "</coordinates>\n" +
+    							"</Point>\n" +
+    							"<TimeSpan>\r"+
+    								"<begin>"+ startTime +"</begin>\n"+
+    								"<end>"+ endTime +"</end>\n"+
+    							"</TimeSpan>\n"+
+    							"</Placemark\n>"
+    	        		);
+    		}
+    		break;
+    		case "Banana":
+    		{
+    	        kmlBuilder.append(
+    	    			"<Placemark>\n\r" +
+    							"<styleUrl>#"+"Banana"+"</styleUrl>\n"+
+    	    					"<Point>\n\r" +
+    								"<coordinates>" + y_location + "," + x_location + "," + z_location + "</coordinates>\n" +
+    							"</Point>\n" +
+    							"<TimeSpan>\n\r"+
+    								"<begin>"+ startTime +"</begin>\n"+
+    								"<end>"+ endTime +"</end>\n"+
+    							"</TimeSpan>\n"+
+    							"</Placemark\n>"
+    	        		);
+    		}
+    		case "Apple":
+    		{
+    	        kmlBuilder.append(
+    	    			"<Placemark>\n\r" +
+    							"<styleUrl>#"+"Apple"+"</styleUrl>\n"+
+    	    					"<Point>\n\r" +
+    								"<coordinates>" + y_location + "," + x_location + "," + z_location + "</coordinates>\n" +
+    							"</Point>\n" +
+    							"<TimeSpan>\n\r"+
+    								"<begin>"+ startTime +"</begin>\n"+
+    								"<end>"+ endTime +"</end>\n"+
+    							"</TimeSpan>\n"+
+    							"</Placemark\n>"
+    	        		);
+    		}
+    		break;
+    		
+    	}
+
+
+    }
+    boolean FinishAndClose()
+    {
 		try
 		{
-			FileWriter fw = new FileWriter("data\\"+i++ +"myGameKmlScenario" +scenario+".kml");
-			BufferedWriter bw = new BufferedWriter(fw);
-			for (MyFruit fr : this._fruits) 
-			{
-				addPlacemark("Fruit", fr.getPos().y(), fr.getPos().x(), fr.getPos().z());
-			}
-			for(Robot ro : this._bots)
-			{
-				addPlacemark("Robot", ro.getPos().y(), ro.getPos().x(), ro.getPos().z());
-			}
 			// ---====== KML End Tags ====-----
 			kmlBuilder.append("\n</Document></kml>>");
 			// ----===== Fix some string mistakes if exist ====--------
@@ -131,42 +205,6 @@ public class KML_Logger
 			return false;
 		}
 		return true;
-	}
-	
-    private void addPlacemark(String style_id, double y_location, double x_location, double z_location)
-    {
-    	/*
-   <Placemark>
-      <TimeStamp>
-        <when>2007-01-14T21:05:02Z</when>
-      </TimeStamp>
-      <styleUrl>#paddle-a</styleUrl>
-      <Point>
-        <coordinates>-122.536226,37.86047,0</coordinates>
-      </Point>
-    </Placemark>
-    
-    y = nlat
-    x = nlon
-    	 */
-    	
-    	
-        //Local date time instance
-        localDateTime = LocalDateTime.now();
-        //Get formatted String
-        String whenPlacemarkString = FORMATTER.format(localDateTime); // "yyyy/MM/dd HH:mm:ss"
-        kmlBuilder.append(
-                " \n   <Placemark>\r\n" +
-                        "      <TimeStamp>\r\n" +
-                        "        <when>" + whenPlacemarkString+ "</when>\r\n" +
-                        "      </TimeStamp>\r\n" +
-                        "      <styleUrl>#" + style_id + "</styleUrl>\r\n" +
-                        "      <Point>\r\n" + // location format:  -122.536226,37.86047,0
-                        "        <coordinates>" + y_location + "," + x_location + "," + z_location + "</coordinates>\r\n" +
-                        "      </Point>\r\n" +
-                        "    </Placemark>\r\n"
-        );
-
     }
 	public void SetGraph(graph other_g)
 	{
