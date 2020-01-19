@@ -1,22 +1,29 @@
 package MyDataStructure;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.json.JSONObject;
 
 import utils.Point3D;
-
+/**This class represents the "robots" that supposed to collect the prizes during the game
+ * 
+ * @author Shahar and Or
+ *
+ */
 public class Robot 
 {
 
 	int id;
-	node_data currNode;
+	node_data currNode; //should delete?
 	edge_data currEdge;
 	int money;
 	Point3D pos;
 	double speed;
 	graph gg;
+	int dest;
 	List<node_data> path;
+	int pathIndex;
 	
 	
 	public Robot(int id, node_data currNode, edge_data currEdge, int money, Point3D pos, double speed, graph gg) 
@@ -37,22 +44,9 @@ public class Robot
 		this.pos = new Point3D(pos);
 		this.speed = speed;
 	}
-	public Robot(int id, node_data currNode, edge_data currEdge, int money, Point3D pos, double speed) 
-	{
-		if (gg != null)
-			this.gg = gg;
-		this.id = id;
-		if(currNode != null)
-		{
-		this.currNode = new Vertex(currNode);
-		}
-		if(currEdge != null)
-		{
-		this.currEdge = new Edge(currEdge);
-		}
-		this.money = money;
-		this.pos = new Point3D(pos);
-		this.speed = speed;
+
+	public int getDest() {
+		return dest;
 	}
 	public Robot() 
 	{
@@ -110,6 +104,9 @@ public class Robot
 	public void setSpeed(double speed) {
 		this.speed = speed;
 	}
+	/** Initializing bot from json file
+	 * @param json
+	 */
 	public void botFromJSON(String json)
 	{
 		if(!json.isEmpty())
@@ -130,6 +127,10 @@ public class Robot
 				this.money = value;
 				int speed = CurrBot.getInt("speed");
 				this.speed = speed;
+				this.path = null;
+				this.pathIndex=-1;
+
+				this.dest = CurrBot.getInt("dest");
 				
 				if(this.gg != null)
 				{
@@ -142,6 +143,40 @@ public class Robot
 				e.printStackTrace();
 			}
 		}
+	}
+	public void setDest(int dest2) {
+			this.dest=dest2;
+		
+	}
+	
+	@Override
+	public String toString() 
+	{
+		StringJoiner joiner = new StringJoiner("->");
+		String repr = "Path: ";
+		if (path != null) 
+		{
+			for (int i = 0; i < path.size(); i++) 
+			{
+				joiner.add(String.valueOf(path.get(i).getKey()));
+			}
+			repr += joiner.toString();
+		}
+
+		repr += " Current Edge: ";
+		if (currEdge != null) 
+		{
+			repr += currEdge.getSrc() + "->" + currEdge.getDest();
+		}
+
+		repr += " Path Index: " + pathIndex;
+		return repr;
+	}
+	public int getPathIndex() {
+		return pathIndex;
+	}
+	public void setPathIndex(int indexInPath) {
+		this.pathIndex=indexInPath;
 	}
 	
 }

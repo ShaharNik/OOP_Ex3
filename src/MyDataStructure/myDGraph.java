@@ -147,7 +147,6 @@ public class myDGraph implements graph, Serializable
 			if(edge != null)
 			{
 				edgesCounter--;
-
 			}
 
 		}

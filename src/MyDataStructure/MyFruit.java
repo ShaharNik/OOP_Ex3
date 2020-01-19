@@ -5,8 +5,16 @@ import org.json.JSONObject;
 
 import utils.Point3D;
 
-public class MyFruit implements Comparable
+public class MyFruit implements Comparable<MyFruit>
 {
+	/**
+	 * This class represents a fruit (object the robots can collect on the graph.
+	 * The fruit contains its position(x,y) on the graph, the value the robot get when eating it,
+	 * the graph the fruit is on.
+	 * the type -1 or 1 represents the direction a fruit can be eaten.
+	 * boolean targeted represents if the fruit is targeted by a robot.
+	 * edge - the edge on the graph the fruit is on, edge have src and dest keys.
+	 */
 	static double EPS = 0.00001;
 	Point3D pos;
 	edge_data edge = null;
@@ -40,6 +48,9 @@ public class MyFruit implements Comparable
 		this.type = type;
 		this.g = g;
 	}
+	/** Initializing fruit from json file
+	 * @param jsonString
+	 */
 	public void initFromJson(String jsonString)
 	{
 		if(!jsonString.isEmpty())
@@ -98,6 +109,8 @@ public class MyFruit implements Comparable
 	public void setType(int type) {
 		this.type = type;
 	}
+	/** find and set the edge the fruit is on.
+	 */
 	public void findEdge()
 	{
 		if(g != null)
@@ -131,9 +144,10 @@ public class MyFruit implements Comparable
 	}
 
 	@Override
-	public int compareTo(Object otherFruit) {
+	public int compareTo(MyFruit otherFruit) {
 		// TODO Auto-generated method stub
-		return this.value - ((MyFruit)otherFruit).value;
+		return this.value - otherFruit.value;
 	}
+
 }
 
