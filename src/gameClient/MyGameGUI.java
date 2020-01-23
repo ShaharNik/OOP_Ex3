@@ -129,28 +129,32 @@ public class MyGameGUI
 			for (int i = 0; i < _fruits.size(); i++) {
 				MyFruit currF = _fruits.get(i);
 				Point3D p = currF.getPos();
-				if (currF.getType() == 1) {
-					StdDraw_gameGUI.setPenColor(Color.GREEN);
-				} else // -1
+				if (currF.getType() == 1) 
+				{ //Apple
+					//StdDraw_gameGUI.setPenColor(Color.GREEN);
+					StdDraw_gameGUI.picture(p.x(), p.y(),"cup.jpeg",(maxx-minx)*0.02,(maxx-minx)*0.02);
+				} else // -1 banana
 				{
-					StdDraw_gameGUI.setPenColor(Color.CYAN);
+					//StdDraw_gameGUI.setPenColor(Color.CYAN);
+					StdDraw_gameGUI.picture(p.x(), p.y(),"ball.jpeg",(maxx-minx)*0.02,(maxx-minx)*0.02);
 				}
-				StdDraw_gameGUI.filledCircle(p.x(), p.y(), (maxx - minx) * 0.006);
+				//StdDraw_gameGUI.filledCircle(p.x(), p.y(), (maxx - minx) * 0.006);
 			}
 		}
 		if (!_bots.isEmpty()) {
 			for (int i = 0; i < _bots.size(); i++) {
 				Robot currB = _bots.get(i);
 				Point3D p = currB.getPos();
-				StdDraw_gameGUI.setPenColor(Color.BLACK);
-				StdDraw_gameGUI.filledCircle(p.x(), p.y(), 0.0002);
+				//StdDraw_gameGUI.setPenColor(Color.BLACK);
+				//StdDraw_gameGUI.filledCircle(p.x(), p.y(), 0.0002);
+				StdDraw_gameGUI.picture(p.x(), p.y(),"ronaldo.jpeg",(maxx-minx)*0.02,(maxx-minx)*0.02);
 			}
 		}
 		StdDraw_gameGUI.show();
 		StdDraw_gameGUI.pause(30);
 	}
 
-	
+
 	///  --------======= Game Play ========-----------
 
 	boolean algo = true;
@@ -166,20 +170,29 @@ public class MyGameGUI
 
 	public static void main(String[] args) {
 		MyGameGUI ggnew = new MyGameGUI();
-		//ggnew.Play("5");
+		//SimpleDB db = new SimpleDB();
+		//db.allUsers();
+		//db.printLog();
 	}
 
 	public void Play(String scenario) 
 	{
+		// login to server
+		//int id = 316416668;
+		//Game_Server.login(id);
+		//System.out.println("Login to server with id: "+id);
+
 		try 
 		{
 			int number = Integer.parseInt(scenario);
 			if (number >= 0 && number <= 23) 
 			{
+
 				game = Game_Server.getServer(number);
+
 				myKML.setGame(game);
 				myKML.createKMLforScenario();
-				
+
 				// init graph by scenario
 				initGraph(number);
 
@@ -201,9 +214,10 @@ public class MyGameGUI
 			e.printStackTrace();
 		}
 	}
-	
+
 	public class ThreadForPlay extends Thread 
 	{
+		long dt = 10;
 		public void run() 
 		{
 			System.out.println("Init fruits");
@@ -228,18 +242,35 @@ public class MyGameGUI
 				System.out.println("GUI initialized");
 			}
 
+
 			System.out.println("Starting the game");
 			game.startGame();
 
+			long timeToEnd = game.timeToEnd();
+			//long test = System.currentTimeMillis();
 			while (game.isRunning()) 
 			{
-				//long timeLeftToTheGame = game.timeToEnd();
-				// System.out.println("Time left = "+timeLeftToTheGame);
+				/*
+				if (isRobotCloseToFruit())
+					dt = 0;
+				else
+					dt = 100;
+				 */
+				
+				// update fruits
 				initOrUpdateFruits();
-				gameMove();
+				
+				
+				//bot position is close to fruit location
+				//if (timeToEnd - game.timeToEnd() > 40)
+				//{
+					gameMove();
+					//timeToEnd = game.timeToEnd();
+				//}
+
 				myKML.initFruits();
 				myKML.initRobots();
-				//kml logger set fruits placemark
+						
 				for (Robot r : _bots) 
 				{
 					if (r.getDest() == -1) 
@@ -262,22 +293,42 @@ public class MyGameGUI
 							r.setPos(_graph.getNode(dest).getLocation()); // update robot position after movement
 						}
 					}
-				}
+				}			
 				if (gui) {
 					paint();
 				}
+				
 				try {
-					Thread.sleep(100);
+					Thread.sleep(dt);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			myKML.FinishAndClose();
 			System.out.println("Finish game");
+			System.out.println("RealScore: " + game.toString());
 			System.out.println("Score: " + calculateScore());
 		}
-
-		private boolean robotHasEdge(edge_data e) 
+		private boolean isRobotCloseToFruit()
+		{
+			for (Robot r : _bots) 
+			{
+				for (MyFruit f : _fruits)
+				{
+					Point3D RobotLocation = r.getPos();
+					Point3D fruitEdgeSrcPos = _graph.getNode(f.getEdge().getDest()).getLocation();
+					Point3D fruitEdgeDestPos = _graph.getNode(f.getEdge().getDest()).getLocation();
+					if (RobotLocation.close2equals(fruitEdgeSrcPos) 
+						|| RobotLocation.close2equals(f.getPos())
+						|| RobotLocation.close2equals(fruitEdgeDestPos))
+						{
+							return true;
+						}
+				}
+			}
+			return false;
+		}
+		private boolean edgeHasRobot(edge_data e) 
 		{
 			for (Robot r : _bots) 
 			{
@@ -291,7 +342,7 @@ public class MyGameGUI
 		}
 		/**
 		 * Each robot contains a path to target fruit, if he reached it, the function smartly will calculate next path to a new fruit.
-		 * we will check for every fruit the edge its on, and will check if there is a robot on that edge.
+		 * we will check for every fruit the edge its on, and if there is a robot on that edge.
 		 * If not - we will check the current direction that we can collect the fruit, there 2 options - the correct node or we will do 2 steps to collect it.
 		 * If a path isn't founded, we will do a random step to avoid "stucks".
 		 * @param r - gets robot
@@ -309,9 +360,10 @@ public class MyGameGUI
 
 				for (MyFruit f : _fruits) 
 				{
+
 					edge_data e = f.getEdge();
 
-					if (robotHasEdge(e))
+					if (edgeHasRobot(e)) //edge has robot
 						continue;
 
 					int node = -1;
@@ -324,10 +376,11 @@ public class MyGameGUI
 						before = Math.max(e.getDest(), e.getSrc());
 					}
 
-					System.out.println("Targeting edge " + before + "->" + node);
+					System.out.println("Targeting edge " + before + "->" + node + " dt: "+dt);
 
 					int currentNode = r.getCurrNode().getKey();
-					if (currentNode == node) {
+					if (currentNode == node) 
+					{
 						System.out.println("already in wanted node...");
 						r.setPath(
 								new ArrayList<>(Arrays.asList(new Vertex(node), new Vertex(before), new Vertex(node))));
@@ -341,7 +394,8 @@ public class MyGameGUI
 
 					List<node_data> path = algorithms.shortestPath(currentNode, node);
 
-					if (path.get(path.size() - 2).getKey() != before) {
+					if (path.get(path.size() - 2).getKey() != before) 
+					{
 						System.out.println("not in the current direction so need 2 more moves");
 						path.add(new Vertex(before));
 						path.add(new Vertex(node));
@@ -406,7 +460,7 @@ public class MyGameGUI
 						}
 					}
 					try {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -428,7 +482,7 @@ public class MyGameGUI
 			return _graph.getNode(ans);
 		}
 	}
-	
+
 	private void initGraph(int scene_number) {
 		String g = game.getGraph();
 		myDGraph gg = new myDGraph();
@@ -522,5 +576,6 @@ public class MyGameGUI
 			score += r.getMoney();
 		return score;
 	}
+
 
 }

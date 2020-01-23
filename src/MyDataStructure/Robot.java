@@ -15,7 +15,7 @@ public class Robot
 {
 
 	int id;
-	node_data currNode; //should delete?
+	node_data currNode; 
 	edge_data currEdge;
 	int money;
 	Point3D pos;

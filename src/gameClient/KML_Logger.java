@@ -40,7 +40,6 @@ public class KML_Logger
 	game_service game;
 	StringBuilder kmlBuilder;
 	DateTimeFormatter FORMATTER;
-	private static int i;
 	LocalDateTime localDateTime;
 	FileWriter fw;
 	BufferedWriter bw;
@@ -53,11 +52,11 @@ public class KML_Logger
 		game = null;
 		kmlBuilder = new StringBuilder();;
 		FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-		i=0;
+		//i=0;
 		localDateTime = null;
 		try 
 		{
-			this.fw = new FileWriter("data\\"+ ++i +"myGameKmlScenario.kml");
+			this.fw = new FileWriter("data\\myGameKmlScenario.kml");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,7 +88,7 @@ public class KML_Logger
 	void initRobots()
 	{
 		// init robots
-		List<String> Robots = game.getRobots(); // Why Game don't give ROBOTS?
+		List<String> Robots = game.getRobots(); 
 		for (int i = 0; i < Robots.size(); i++) 
 		{
 			Robot b = new Robot();
